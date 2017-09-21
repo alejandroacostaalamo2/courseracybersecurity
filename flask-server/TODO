@@ -8,11 +8,17 @@ What have you consider?
 - Email of the user must be confirmed before using the system
 - It's mandatory to used two factor authentication
 - The password is hashed before inserting it in DB
+- A lot of SQL inyection test have been made
+
+How do I use it:
+Three options:
+a) Use it online at: http://coursera.acostasite.com:8000/
 
 
-How do I use it
-You can follow the below steps but if you want something easier use it online at:
+a) You can follow the below steps but if you want something easier use it online at:
 http://coursera.acostasite.com:8000/
+The username is ubuntu, password: reverse
+To get root access: sudo su (and retype reverse as password)
 
 If you want to go further, just download the VM at:
 http://stats.labs.lacnic.net/COURSERA/capstone-vm
@@ -20,10 +26,12 @@ http://stats.labs.lacnic.net/COURSERA/capstone-vm
 If you want to install:
 
 Requirements:
-- Flask
+- Flask  (apt-get install python-pip3; pip3 install Flask)
 - Python3
-- MySQL
-- MTA (Email Server) (in my case using Postfix in the same server)
+- MySQL (apt-get install mysql-server)
+- MTA (Email Server) (in my case using Postfix in the same server) (apt-get install postfix)
+
+
 
 1) Create the DB
 mysql -u root -p -e "create database COURSERA"; 
