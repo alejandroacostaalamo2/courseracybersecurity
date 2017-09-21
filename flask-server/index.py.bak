@@ -1,0 +1,122 @@
+from flask import Flask, render_template, flash, request
+from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
+
+#It´s recommended to usea server with a webserver in the frontend. Running directly for simplicity
+PORT = 8000 #Port in which our APP will run
+
+
+app = Flask(__name__) #new object
+app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a' #security to handle the form. Mandatory
+
+@app.errorhandler(404)
+def page_not_found(a=''):
+  return render_template('404.html')
+
+
+def RenderPage(self):
+  pass
+
+class ReusableForm(Form):
+    name = TextField('Name:', validators=[validators.required()])
+    email = TextField('Email:', validators=[validators.required(), validators.Length(min=6, max=35)])
+    password = TextField('Password (min 8 char capital&lower case:', validators=[validators.required(), validators.Length(min=3, max=35)])
+ 
+    def reset(self):
+        blankData = MultiDict([ ('csrf', self.reset_csrf() ) ])
+        self.process(blankData)
+
+
+@app.route('/', methods=['GET','POST']) #decorator
+def index():
+    form = ReusableForm(request.form)
+ 
+    print (form.errors)
+    if request.method == 'POST':
+        name=request.form['name']
+        password=request.form['password']
+        email=request.form['email']
+        print (name, " ", email, " ", password)
+ 
+        if form.validate():
+            # Save the comment here.
+            flash('Thanks for registration ' + name)
+        else:
+            flash('Error: There was an error processing your form. Please check the data. ')
+  
+ 
+    return render_template('user.html', form=form)
+
+def ValidateFormRegistry(name, password, email):
+  #The objetive is to validate some input fields
+  # 0 means valid, 1 means invalid
+
+  #Validate name not empty, not null longer than 2 chars and less than 40 chars
+  VALID=0
+  if (name.strip()) and len(name) < 40 and len(name) > 2:  #name is not empty and also validate null
+    flash('Name good ')
+  else:
+    VALID=1
+    flash('Error: Invalid name. Is it empty?, too long? ', 'error' ) 
+    #return 1
+
+  #validate strong password. Min 8 chars, must contain uppercase, lowercase characters
+  import re
+  if re.match(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
+    flash('Password strong enough ')
+    #return 0
+  else:
+    flash('Error: Invalid password ') 
+    #return 1
+  
+  #validate valid email address. As a reminder, the DB validates uniqueness of the email adddress
+  if (bool(re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email))):
+    flash('Valid email address ')
+  else:
+    flash('Error: Invalid email  address') 
+
+
+@app.route('/registry',methods=['GET','POST']) #decorator
+def registy():
+    form = ReusableForm(request.form)
+
+    print (form.errors)
+    if request.method == 'POST':
+        name=request.form['name']
+        password=request.form['password']
+        email=request.form['email']
+        print (name, " ", email, " ", password)
+
+        if (ValidateFormRegistry(name, password, email)): #Even when there is some sort of validation make an extra validation
+            flash('Error: There was an error processing your form. Please check the data. ')
+
+        if form.validate():
+            SaveRegistrationInDB(name, password, email) #Only store in DB if passes validation
+            flash('Thanks for registration ' + name)
+        else:
+            flash('Error: There was an error processing your form. Please check the data. ')
+
+
+    return render_template('user.html', form=form)
+
+def SaveRegistrationInDB(name, password, email):
+  #The objetive of the function is to store registration data of the user in DB
+  import hashlib #The password is store in DB in hash sha224
+  import dbconnect
+  conn = dbconnect.dbconnect()
+  conn.autocommit(True)
+  cur = conn.cursor()
+  name=str(name)
+  password=str(password)
+  password2=hashlib.sha384()
+  password2.update(password.encode('UTF-8'))
+  email=str(email)
+  cur.execute("INSERT into USERS (`FULLNAME`,`PASS`,`EMAIL`) values (%s,%s,%s)", (name, str(password2),email))
+
+  return
+
+@app.route('/coursera') #decorator
+def coursera():
+  return 'returning coursera Ojala sirva'
+
+if __name__ == '__main__':
+  app.run(port=PORT,host='0.0.0.0') #Executing the server
