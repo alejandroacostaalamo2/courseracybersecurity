@@ -37,9 +37,9 @@ git clone https://github.com/alejandroacostaalamo2/courseracybersecurity
 2) Create the DB
 cd courseracybersecurity
 mysql -u root -p -e "create database COURSERA"; 
-mysql -u username -p -h localhost COURSERA < schema.sql
-CREATE USER 'root'@'localhost' IDENTIFIED BY 'coursera';
-CREATE USER 'readonly'@'localhost' IDENTIFIED BY 'coursera';
+mysql -u root -p -h localhost COURSERA < schema.sql
+CREATE USER 'root'@'localhost' IDENTIFIED BY 'coursera'; (probably already have these users)
+CREATE USER 'readonly'@'localhost' IDENTIFIED BY 'coursera'; (probably already have these users)
 GRANT ALL PRIVILEGES ON * . * TO 'root'@'localhost';
 GRANT ALL PRIVILEGES ON * . * TO 'readonly'@'localhost';
 
